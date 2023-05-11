@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# This script is used to partial clone a git repository.
+# It asks the user for the repository URL, depth, folder to checkout and branch to checkout.
+
+# Color Codes
+GREEN='\033[0;32m'
+
+# Ask for the repository URL
+echo "Enter the repository URL: "
+
+read REPO_URL
+
+# Ask User for depth (default is 1)
+echo "Enter the depth (default is 1): "
+
+read DEPTH
+
+# Clone the repository in the current directory
+git clone --depth ${DEPTH:-1} --filter=blob:none --sparse ${REPO_URL}
+
+# Get Repository Name
+REPO_NAME=$(basename ${REPO_URL} .git)
+
+# Change Directory to the Repository
+cd ${REPO_NAME}
+
+# Enable Sparse Checkout
+git config core.sparseCheckout true
+
+# Ask User which folder to checkout e.g. src, docs, etc.
+echo "Enter the folder to checkout: "
+
+read FOLDER
+
+# Add the folder to the sparse-checkout file
+echo "$FOLDER/*" >> .git/info/sparse-checkout
+
+# Ask which branch to checkout (default is main)
+echo "Enter the branch to checkout (default is main): "
+
+read BRANCH
+
+# Checkout the branch
+git checkout ${BRANCH:-main}
+
+echo -e "${GREEN}Done!"
