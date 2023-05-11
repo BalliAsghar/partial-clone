@@ -4,7 +4,7 @@ This script allows you to perform a partial clone of a Git repository. It asks f
 
 ## Usage
 
-1. Run the script using `bash pc.sh`.
+1. Run the script using `bash pc`.
 2. Enter the repository URL when prompted.
 3. Enter the depth for the clone operation when prompted. The default is 1 if no input is provided.
 4. Wait for the clone operation to finish.
