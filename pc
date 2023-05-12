@@ -1,68 +1,21 @@
 #!/bin/bash
 
-# Color Codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-# Usage Instructions
-echo -e "${GREEN}This script clones a specific branch and folder from a Git repository.\n\
-Default values: depth=1, branch=main, folder=root.\n\
-If you want to use the default value, press Enter without typing anything.${NC}"
-
-# Function to validate URL
-function valid_url() {
-    if [[ `wget -S --spider $1  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then return 0; else return 1; fi
-}
-
 # Ask for the repository URL
 while true; do
-    echo -e "${YELLOW}Enter the repository URL: ${NC}"
-    read REPO_URL
-    if valid_url $REPO_URL; then
+    read -p "Enter the repository URL: " REPO_URL
+    if git ls-remote $REPO_URL &> /dev/null; then
         break
     else
-        echo -e "${RED}Invalid URL. Please try again.${NC}"
+        echo "Invalid URL. Please try again."
     fi
 done
 
-# Ask User for depth (default is 1)
-echo -e "${YELLOW}Enter the depth (default is 1): ${NC}"
-read DEPTH
-
-# Ask For which branch to checkout (default is main)
-echo -e "${YELLOW}Enter the branch to checkout (default is main): ${NC}"
-read BRANCH
-
-# Clone the repository in the current directory
-git clone --depth ${DEPTH:-1} --filter=blob:none --sparse --branch ${BRANCH:-main} ${REPO_URL} 
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Git clone failed. Exiting script.${NC}"
-    exit 1
-fi
-
-# Get Repository Name
-REPO_NAME=$(basename ${REPO_URL} .git)
-
-# Change Directory to the Repository
-cd ${REPO_NAME}
-
-# Enable Sparse Checkout
-git config core.sparseCheckout true
-
-# Ask User which folder to checkout e.g. src, docs, etc.
-echo -e "${YELLOW}Enter the folder to checkout (default is root): ${NC}"
-read FOLDER
-
-# Add the folder to the sparse-checkout file
-echo "$FOLDER/*" >> .git/info/sparse-checkout
-
-# Checkout the branch
-git checkout ${BRANCH:-main}
-
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}Repository cloned successfully!${NC}"
-else
-    echo -e "${RED}Git checkout failed.${NC}"
-fi
+# Clone the repository
+read -p "Enter the branch to checkout (default is main): " BRANCH
+read -p "Enter the folder to checkout (default is root): " FOLDER
+git clone --depth 1 --filter=blob:none --sparse --branch ${BRANCH:-main} ${REPO_URL} &&
+cd $(basename ${REPO_URL} .git) &&
+git config core.sparseCheckout true &&
+echo "$FOLDER/*" >> .git/info/sparse-checkout &&
+git checkout ${BRANCH:-main} &&
+echo "Repository cloned successfully!"
