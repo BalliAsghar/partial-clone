@@ -5,7 +5,6 @@ This script allows you to partially clone a Git repository by specifying a branc
 ## Features
 
 - Clones a specific branch from the repository
-- Clones a specific branch from the repository
 - Supports shallow cloning for faster cloning
 - User input validation and error handling
 
