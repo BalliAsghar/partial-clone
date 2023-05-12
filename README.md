@@ -9,6 +9,13 @@ This script allows you to partially clone a Git repository by specifying a branc
 - Supports shallow cloning for faster cloning
 - User input validation and error handling
 
+## macos users can also install using brew
+
+```bash
+brew tap BalliAsghar/apps
+brew install pc
+```
+
 ## Usage
 
 1. Make sure you have git and wget installed on your system.
